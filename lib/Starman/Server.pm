@@ -550,8 +550,16 @@ sub _finalize_response {
                 }
                 _syswrite($conn, \$buffer);
             },
+            trailer => sub {
+                $self->{trailer} = shift;
+            },
             close => sub {
-                _syswrite($conn, \"0$CRLF$CRLF") if $chunked;
+                if ($chunked) {
+                    _syswrite($conn, \"0$CRLF$CRLF");
+                    if (my $trailer = delete $self->{trailer}) {
+                        _syswrite($conn, \"$CRLF$trailer$CRLF");
+                    }
+                }
             };
     }
 }
