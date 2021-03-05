@@ -555,10 +555,11 @@ sub _finalize_response {
             },
             close => sub {
                 if ($chunked) {
-                    _syswrite($conn, \"0$CRLF$CRLF");
+                    _syswrite($conn, \"0$CRLF");
                     if (my $trailer = delete $self->{trailer}) {
-                        _syswrite($conn, \"$CRLF$trailer$CRLF");
+                        _syswrite($conn, \"$trailer$CRLF");
                     }
+                    _syswrite($conn, \"$CRLF");
                 }
             };
     }
